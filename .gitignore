@@ -4,6 +4,10 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### AOC ###
+/app/src/test/kotlin/
+/app/src/test/resources/
+
 ### IntelliJ IDEA ###
 .idea/gradle.xml
 .idea/kotlinc.xml
