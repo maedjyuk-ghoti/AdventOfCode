@@ -1,6 +1,4 @@
-package ghoti.maedjyuk.app
-
-import java.util.stream.Collectors
+package ghoti.maedjyuk.app.aoc2025
 
 object Day07 {
     private fun Pair<String, String>.propagateTachyons(): Pair<String, Int> {

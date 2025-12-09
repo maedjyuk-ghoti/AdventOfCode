@@ -1,4 +1,4 @@
-package ghoti.maedjyuk.app
+package ghoti.maedjyuk.app.utilities
 
 import kotlin.math.max
 import kotlin.math.min
@@ -45,14 +45,3 @@ fun Set<LongRange>.addRangeAndCombine(newRange: LongRange): Set<LongRange> =
         else ->
             this.plus(setOf(newRange))
     }
-
-fun <T> List<List<T>>.rotateCounterClockwise(filler: T): List<List<T>> {
-    val maxLength = this.maxOf(List<T>::size)
-
-    return List(maxLength) { i ->
-        List(this.size) { j ->
-            this.getOrElse(j) { emptyList() }
-                .getOrElse(maxLength - i - 1) { filler }
-        }
-    }
-}

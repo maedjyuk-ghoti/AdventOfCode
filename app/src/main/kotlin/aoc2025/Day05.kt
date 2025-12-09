@@ -1,5 +1,7 @@
-package ghoti.maedjyuk.app
+package ghoti.maedjyuk.app.aoc2025
 
+import ghoti.maedjyuk.app.utilities.addRangeAndCombine
+import ghoti.maedjyuk.app.utilities.countL
 import kotlin.collections.fold
 
 /**
@@ -12,7 +14,7 @@ import kotlin.collections.fold
  *  which is absolutely possible given that we're dealing with [Long].
  *
  * [Iterable.count] can also overflow the heap space because it expands the range than iterates over each element.
- *  See [LongRange.countL] for a workaround.
+ *  See [countL] for a workaround.
  */
 object Day05 {
 

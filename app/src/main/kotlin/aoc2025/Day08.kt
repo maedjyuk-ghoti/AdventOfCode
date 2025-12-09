@@ -1,42 +1,12 @@
-package ghoti.maedjyuk.app
+package ghoti.maedjyuk.app.aoc2025
 
+import ghoti.maedjyuk.app.utilities.Point3D
+import ghoti.maedjyuk.app.utilities.cartesianProduct
+import ghoti.maedjyuk.app.utilities.distanceTo
+import ghoti.maedjyuk.app.utilities.takeWhileInclusive
 import kotlin.collections.emptySet
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 object Day08 {
-    data class Point3D(
-        val x: Int,
-        val y: Int,
-        val z: Int
-    )
-
-    fun Point3D.distanceTo(other: Point3D): Double =
-        sqrt(
-            (x - other.x).toDouble().pow(2) +
-                    (y - other.y).toDouble().pow(2) +
-                    (z - other.z).toDouble().pow(2)
-        )
-
-    fun <T> List<T>.cartesianProduct(other: List<T>): List<Pair<T, T>> =
-        this.flatMap { a ->
-            other.map { b ->
-                a to b
-            }
-        }
-
-    // Source - https://stackoverflow.com/a
-    // Posted by Roland
-    // Retrieved 2025-12-09, License - CC BY-SA 4.0
-    fun <T> Sequence<T>.takeWhileInclusive(predicate: (T) -> Boolean) = sequence {
-        with(iterator()) {
-            while (hasNext()) {
-                val next = next()
-                yield(next)
-                if (!predicate(next)) break
-            }
-        }
-    }
 
     private fun parseInput(input: String): List<Point3D> =
         input.split(System.lineSeparator())

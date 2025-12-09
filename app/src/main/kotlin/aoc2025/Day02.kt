@@ -1,4 +1,4 @@
-package ghoti.maedjyuk.app
+package ghoti.maedjyuk.app.aoc2025
 
 object Day02 {
     private const val REGEX_STRING = "^(\\d+)\\1+$"

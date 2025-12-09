@@ -1,5 +1,6 @@
-package ghoti.maedjyuk.app
+package ghoti.maedjyuk.app.aoc2025
 
+import ghoti.maedjyuk.app.utilities.rotateCounterClockwise
 import kotlin.collections.component1
 import kotlin.collections.set
 

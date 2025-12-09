@@ -1,15 +1,10 @@
-package ghoti.maedjyuk.app
+package ghoti.maedjyuk.app.aoc2025
+
+import ghoti.maedjyuk.app.utilities.cartesianProduct
 
 object Day04 {
     private fun parse(input: String): List<String> =
         input.split(System.lineSeparator())
-
-    private fun <T> List<T>.cartesianProduct(other: List<T>): List<Pair<T, T>> =
-        this.flatMap { a ->
-            other.map { b ->
-                a to b
-            }
-        }
 
     private fun List<String>.isOutOfBounds(coordinates: Pair<Int, Int>): Boolean =
         coordinates.first < 0 ||

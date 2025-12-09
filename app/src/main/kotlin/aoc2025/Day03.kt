@@ -1,4 +1,4 @@
-package ghoti.maedjyuk.app
+package ghoti.maedjyuk.app.aoc2025
 
 import kotlin.math.pow
 
