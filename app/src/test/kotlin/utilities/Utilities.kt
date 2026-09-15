@@ -1,7 +1,8 @@
 package utilities
 
-private fun getInput(fileName: String): String =
-    object {}.javaClass
+fun getInput(fileName: String): String =
+    object {}
+        .javaClass
         .getResourceAsStream(fileName)!!
         .bufferedReader()
         .readText()
@@ -9,7 +10,7 @@ private fun getInput(fileName: String): String =
 fun <T> functionTest(
     inputFile: String,
     function: (String) -> T,
-    test: (T) -> Unit
+    test: (T) -> Unit,
 ) {
     val input = getInput("../$inputFile")
     val actual = function(input)
@@ -21,7 +22,7 @@ fun <T> functionTest(
     inputFile: String,
     inputSize: Int,
     function: (String, Int) -> T,
-    test: (T) -> Unit
+    test: (T) -> Unit,
 ) {
     val input = getInput(inputFile)
     val actual = function(input, inputSize)
