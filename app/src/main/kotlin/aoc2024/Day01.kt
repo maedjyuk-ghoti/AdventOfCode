@@ -9,8 +9,8 @@ class Day01(
     private val lists: Pair<List<Int>, List<Int>> =
         input
             .split(System.lineSeparator())
-            .map { line -> line.split("\\s+".toRegex()).map { it.toInt() } }
-            .let { lines -> lines.map { line -> line.first() } to lines.map { line -> line.last() } }
+            .map { line -> line.split("\\s+".toRegex()).map(String::toInt) }
+            .let { lines -> lines.map(List<Int>::first) to lines.map(List<Int>::last) }
 
     private val myList = lists.first
     private val historiansList = lists.second
