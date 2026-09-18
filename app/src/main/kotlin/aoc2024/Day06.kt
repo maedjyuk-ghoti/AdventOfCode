@@ -1,156 +1,65 @@
 package ghoti.maedjyuk.app.aoc2024
 
+import ghoti.maedjyuk.app.utilities.Point2D
+
 class Day06(
     input: String,
 ) {
-    val map: Map<Pair<Int, Int>, Char> =
-        input
-            .split(System.lineSeparator())
-            .map(String::toList)
-            .flatMapIndexed { y, row -> row.mapIndexed { x, c -> Pair(x, y) to c } }
-            .toMap()
+    private val grid: List<CharArray> = input.split(System.lineSeparator()).map(String::toCharArray)
 
-    val bounds: Pair<IntRange, IntRange> =
-        input
-            .split(System.lineSeparator())
-            .let { lines -> lines.indices to lines.first().indices }
+    private val start: Point2D =
+        grid
+            .flatMapIndexed { y, row ->
+                row.mapIndexed { x, c ->
+                    if (c == '^') Point2D(x, y) else null
+                }
+            }.filterNotNull()
+            .first()
 
-    private companion object {
-        val LEFT = -1 to 0
-        val UP = 0 to -1
-        val RIGHT = 1 to 0
-        val DOWN = 0 to 1
+    private fun Point2D.turn(): Point2D =
+        when (this) {
+            Point2D.LEFT -> Point2D.UP
+            Point2D.UP -> Point2D.RIGHT
+            Point2D.RIGHT -> Point2D.DOWN
+            Point2D.DOWN -> Point2D.LEFT
+            else -> throw IllegalStateException("Bad direction: $this")
+        }
 
-        val GUARD_SYMBOLS: List<Char> =
-            listOf('<', '^', '>', 'v')
+    private operator fun List<CharArray>.get(at: Point2D): Char? = getOrNull(at.y)?.getOrNull(at.x)
 
-        fun nextDirection(direction: Pair<Int, Int>): Pair<Int, Int> =
-            when (direction) {
-                LEFT -> UP
-                UP -> RIGHT
-                RIGHT -> DOWN
-                DOWN -> LEFT
-                else -> 0 to 0
+    private operator fun List<CharArray>.set(
+        at: Point2D,
+        c: Char,
+    ) {
+        this[at.y][at.x] = c
+    }
+
+    private fun traverse(): Pair<Set<Point2D>, Boolean> {
+        val seen = mutableSetOf<Pair<Point2D, Point2D>>()
+        var location = start
+        var direction = Point2D.UP
+
+        while (grid[location] != null && (location to direction) !in seen) {
+            seen += location to direction
+            val next = location + direction
+
+            if (grid[next] == '#') {
+                direction = direction.turn()
+            } else {
+                location = next
             }
-    }
-
-    private fun Pair<Int, Int>.inBounds(): Boolean = first in bounds.first && second in bounds.second
-
-    private fun Map<Pair<Int, Int>, Char>.findGuard(): Pair<Int, Int> =
-        entries
-            .find { (_, v) -> GUARD_SYMBOLS.contains(v) }
-            ?.key ?: (-1 to -1)
-
-    private tailrec fun getUniqueGuardPositions(
-        map: Map<Pair<Int, Int>, Char>,
-        direction: Pair<Int, Int>,
-        memo: Set<Pair<Int, Int>>,
-    ): Set<Pair<Int, Int>> {
-        val guardCoords = map.findGuard()
-        if (!guardCoords.inBounds()) return memo
-
-        val nextStep = (guardCoords.first + direction.first) to (guardCoords.second + direction.second)
-
-        return if (map[nextStep] == '#') {
-            getUniqueGuardPositions(map, nextDirection(direction), memo)
-        } else {
-            getUniqueGuardPositions(
-                map
-                    .toMutableMap()
-                    .apply {
-                        this[guardCoords] = 'X'
-                        this[nextStep] = '^'
-                    },
-                direction,
-                memo + guardCoords,
-            )
         }
+        return seen.map { it.first }.toSet() to (grid[location] != null)
     }
 
-    private fun Map<Pair<Int, Int>, Char>.getUniqueGuardPositions(): Set<Pair<Int, Int>> = getUniqueGuardPositions(this, UP, emptySet())
+    fun solvePart1(): Int = traverse().first.size
 
-    private tailrec fun getUniqueGuardPositions2(
-        map: Map<Pair<Int, Int>, Char>,
-        guard: Pair<Int, Int>,
-        direction: Pair<Int, Int>,
-        memo: List<Pair<Pair<Int, Int>, Pair<Int, Int>>>,
-    ): List<Pair<Pair<Int, Int>, Pair<Int, Int>>> {
-        if (!guard.inBounds()) return memo
-
-        val nextStep = (guard.first + direction.first) to (guard.second + direction.second)
-
-        return if (map[nextStep] == '#') {
-            getUniqueGuardPositions2(map, guard, nextDirection(direction), memo)
-        } else {
-            getUniqueGuardPositions2(
-                map,
-                nextStep,
-                direction,
-                memo + (guard to direction),
-            )
-        }
-    }
-
-    private fun Map<Pair<Int, Int>, Char>.getUniqueGuardPositions2(): List<Pair<Pair<Int, Int>, Pair<Int, Int>>> =
-        getUniqueGuardPositions2(this, findGuard(), UP, emptyList())
-
-    private tailrec fun isLoop(
-        map: Map<Pair<Int, Int>, Char>,
-        direction: Pair<Int, Int>,
-        memo: List<Pair<Pair<Int, Int>, Pair<Int, Int>>>,
-    ): Boolean {
-        val guardCoords = map.findGuard()
-        if (!guardCoords.inBounds()) return false
-        if (memo.contains(guardCoords to direction)) return true
-
-        val nextStep = (guardCoords.first + direction.first) to (guardCoords.second + direction.second)
-
-        return if (map[nextStep] == '#') {
-            isLoop(map, nextDirection(direction), memo)
-        } else {
-            isLoop(
-                map
-                    .toMutableMap()
-                    .apply {
-                        this[guardCoords] = 'X'
-                        this[nextStep] = '^'
-                    },
-                direction,
-                memo + (guardCoords to direction),
-            )
-        }
-    }
-
-    private fun findLoops(map: Map<Pair<Int, Int>, Char>): Int {
-        val uniquePositions = map.getUniqueGuardPositions2()
-        val guardStart = map.findGuard()
-        return uniquePositions.indices
-            .reversed()
-            .take(uniquePositions.size - 1)
-            .map { index ->
-                // starting from index
-                // put obstacle at index, user at index - 1
-                val newObstacleCoords = uniquePositions[index].first
-                val newGuardStart = uniquePositions[index - 1].first
-                val newDirection = uniquePositions[index - 1].second
-
-                val newMap =
-                    map.toMutableMap().apply {
-                        this[guardStart] = '.'
-                        this[newObstacleCoords] = '#'
-                        this[newGuardStart] = '^'
-                    }
-                // take unique positions up to index
-                // run forward and check for a loop
-                newObstacleCoords to isLoop(newMap, newDirection, uniquePositions.subList(0, index - 1))
-            }.distinctBy { it.first }
-            .count { it.second }
-    }
-
-    fun solvePart1(): Int =
-        map
-            .getUniqueGuardPositions()
-            .count()
-
-    fun solvePart2(): Int = findLoops(map)
+    fun solvePart2(): Int =
+        traverse()
+            .first
+            .filterNot { it == start }
+            .count { candidate ->
+                grid[candidate] = '#'
+                traverse().also { grid[candidate] = '.' }.second
+            }
 }
