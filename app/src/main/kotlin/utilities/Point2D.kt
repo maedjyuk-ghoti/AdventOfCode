@@ -21,5 +21,7 @@ data class Point2D(
         val UP = Point2D(0, -1)
         val RIGHT = Point2D(1, 0)
         val DOWN = Point2D(0, 1)
+
+        val CARDINAL_DIRECTIONS = setOf(LEFT, UP, RIGHT, DOWN)
     }
 }
