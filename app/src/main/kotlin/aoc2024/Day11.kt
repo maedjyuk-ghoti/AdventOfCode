@@ -16,35 +16,34 @@ class Day11(
         )
     }
 
-    private fun Long.blink(): List<Long> =
+    private val cache: MutableMap<Pair<Long, Int>, Long> = mutableMapOf()
+
+    private fun blinkRec(
+        stone: Long,
+        blinks: Int,
+        key: Pair<Long, Int> = stone to blinks,
+    ): Long =
         when {
-            this == 0L -> listOf(1)
-            this.hasEvenDigits() -> this.split()
-            else -> listOf(this * 2024)
+            blinks == 0 -> {
+                1L
+            }
+
+            key in cache -> {
+                cache.getValue(key)
+            }
+
+            else -> {
+                when {
+                    stone == 0L -> blinkRec(1, blinks - 1)
+                    stone.hasEvenDigits() -> stone.split().sumOf { blinkRec(it, blinks - 1) }
+                    else -> blinkRec(stone * 2024, blinks - 1)
+                }.also { result -> cache[key] = result }
+            }
         }
 
-    private fun Map<Long, Long>.blink(): Map<Long, Long> =
-        flatMap { (value, count) -> value.blink().map { it to count } }
-            .groupBy(Pair<Long, Long>::first, Pair<Long, Long>::second)
-            .mapValues { it.value.sum() }
+    private fun sumBlinks(times: Int): Long = stones.sumOf { blinkRec(it, times) }
 
-    private fun Map<Long, Long>.blink(times: Int): Map<Long, Long> =
-        generateSequence(this) { it.blink() }
-            .drop(1)
-            .take(times)
-            .last()
+    fun solvePart1(): Long = sumBlinks(25)
 
-    fun solvePart1(): Long =
-        stones
-            .associateWith { 1L }
-            .blink(25)
-            .values
-            .sum()
-
-    fun solvePart2(): Long =
-        stones
-            .associateWith { 1L }
-            .blink(75)
-            .values
-            .sum()
+    fun solvePart2(): Long = sumBlinks(75)
 }
