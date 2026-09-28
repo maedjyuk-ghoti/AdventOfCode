@@ -24,4 +24,9 @@ data class Point2D(
 
         val CARDINAL_DIRECTIONS = setOf(LEFT, UP, RIGHT, DOWN)
     }
+
+    fun cardinalNeighbors(): Set<Point2D> =
+        CARDINAL_DIRECTIONS
+            .map { direction -> this + direction }
+            .toSet()
 }
